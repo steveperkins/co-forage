@@ -38,14 +38,20 @@ const GET_STORE_BARCODE_HISTORY = `SELECT store.id AS storeId, store.name AS sto
 FROM store_barcode_history sb JOIN product p ON sb.barcode=p.barcode JOIN store ON sb.storeid=store.id
 WHERE storeId=$1 AND barcode=$1`;
 class DbSvc {
-    constructor(host, port, dbname, user, password) {
-        this.pool = new pg_1.Pool({
-            host,
-            database: dbname,
-            user,
-            password,
-            port
-        });
+    constructor(hostOrConnectionString, port, dbname, user, password) {
+        // If only the host is populated, the user is passing a connection string
+        if (hostOrConnectionString && !port && !dbname && !user && !password) {
+            this.pool = new pg_1.Pool({ connectionString: hostOrConnectionString, ssl: true });
+        }
+        else {
+            this.pool = new pg_1.Pool({
+                host: hostOrConnectionString,
+                database: dbname,
+                user,
+                password,
+                port
+            });
+        }
     }
     init() {
         return __awaiter(this, void 0, void 0, function* () {
