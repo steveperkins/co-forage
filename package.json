@@ -24,7 +24,7 @@
   "scripts": {
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
     "build-win": "tsc && xcopy src\\web dist\\web /S /Y && xcopy README.md dist\\web\\README.md /Y",
-    "build": "tsc && cp src/web dist/web && cp README.md dist/web/",
+    "build": "tsc && cp -r src/web dist/web && cp README.md dist/web/",
     "start": "node .",
     "debug": "node --nolazy --inspect-brk=9229 .",
     "test": "echo \"Error: no test specified\" && exit 1"
