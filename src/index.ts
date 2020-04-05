@@ -19,24 +19,17 @@ const logger = winston.createLogger({
 try {
    const placesSvc = new PlaceLookupSvc(process.env.HEREAPI_TOKEN);
    const barcodeSvc = new BarcodeSvc();
-   const dbSvc = new DbSvc(process.env.DATABASE_URL)
+   const dbSvc = new DbSvc(process.env.DATABASE_URL || "postgres://service:53ndgjdg0idf0ds@localhost:5433/coforage")
 
    dbSvc.init();
 
    const app = express();
-   // logger.info("MD html is " + require("fs").readFileSync("./README.md"))
-   // const index = new Remarkable().render();
-   // app.use("/", async (req, res, next) => {
-   //    res.header("Content-Type", "text/html")
-   //    res.render(index)
-   // })
-   /* Captures requests for all static files */
-   app.use(/^(.+)$/, function(req, res){
-      res.sendfile(`${__dirname}/web/${req.params[0]}`);
-  });
+   app.use("/web", function(req, res) {
+      res.sendfile(`dist/web/${req.path}`);
+   });
 
-   app.use(bodyParser.urlencoded({ extended: false }));
-   app.use(bodyParser.json());
+   app.use("/api/*", bodyParser.urlencoded({ extended: false }));
+   app.use("/api/*", bodyParser.json());
    app.use("/api/*", async (req, res, next) => {
       if (req.method.toLowerCase() === "options") {
          next()
@@ -144,6 +137,13 @@ try {
          return;
       }
 
+      if (amount < 0 || amount > 100) {
+         res.status(400)
+         res.json({ message: "amount must be between 0 and 100", parameter: "amount" })
+         res.end()
+         return;
+      }
+
       if (req.body.barcode.length === 12) {
          req.body.barcode = "0" + req.body.barcode
       }
@@ -230,6 +230,9 @@ try {
       return
    })
 
+   app.use("/", function(req, res){
+      res.sendfile("dist/web/index.html");
+   });
 
    const serverPort = process.env.OPENSHIFT_NODEJS_PORT || 8080
    const serverIp = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1'
@@ -238,5 +241,5 @@ try {
    })
 
 } catch(e) {
-   logger.error("Great. Something got hosed. This log message is showing up instead of letting Heroku crash the whole application.")
+   logger.error("Great. Something got hosed. " + e)
 }

@@ -36,7 +36,7 @@ export class DbSvc {
     constructor(hostOrConnectionString: string, port?: number, dbname?: string, user?: string, password?: string) {
         // If only the host is populated, the user is passing a connection string
         if (hostOrConnectionString && !port && !dbname && !user && !password) {
-            this.pool = new Pool({ connectionString: hostOrConnectionString, ssl: true })
+            this.pool = new Pool({ connectionString: hostOrConnectionString })
         } else {
             this.pool = new Pool({
                 host: hostOrConnectionString,

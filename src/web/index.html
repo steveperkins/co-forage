@@ -1,6 +1,253 @@
+<!DOCTYPE HTML>
+<!--
+	Solid State by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
 <html>
-    <head></head>
-    <body>
-        lookie lookie
-    </body>
+	<head>
+		<title>Co-forage</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!--[if lte IE 8]><script src="web/assets/js/ie/html5shiv.js"></script><![endif]-->
+		<link rel="stylesheet" href="web/assets/css/main.css" />
+		<link rel="stylesheet" href="web/assets/css/coforage.css" />
+		<!--[if lte IE 9]><link rel="stylesheet" href="web/assets/css/ie9.css" /><![endif]-->
+		<!--[if lte IE 8]><link rel="stylesheet" href="web/assets/css/ie8.css" /><![endif]-->
+	</head>
+	<body>
+		<!-- Page Wrapper -->
+			<div id="page-wrapper">
+
+				<!-- Header -->
+					<header id="header" class="alt">
+						<h1><a href="index.html">Co-forage</a></h1>
+						<nav>
+							<a href="#menu">Menu</a>
+						</nav>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<div class="inner">
+							<h2>Menu</h2>
+							<ul class="links">
+								<li><a href="index.html">Home</a></li>
+								<li><a href="generic.html">Generic</a></li>
+								<li><a href="elements.html">Elements</a></li>
+								<li><a href="#">Log In</a></li>
+								<li><a href="#">Sign Up</a></li>
+							</ul>
+							<a href="#" class="close">Close</a>
+						</div>
+					</nav>
+
+				<!-- Banner -->
+					<section id="banner">
+						<div class="inner">
+							<div class="logo"><span class="icon fa-diamond"></span></div>
+							<h2>Co-forage</h2>
+							<p>Crowdsourced Retail Inventory Reports</p>
+						</div>
+					</section>
+
+				<!-- Wrapper -->
+					<section id="wrapper">
+
+						<!-- One -->
+							<section id="one" class="wrapper spotlight style1">
+								<div class="inner">
+									<!-- <a href="#" class="image"><img src="web/images/pic01.jpg" alt="" /></a> -->
+									<div class="content">
+										<h2 class="major">Submit an Inventory Report</h2>
+                                        <p>Help others find the products they need.</p>
+                                        <div style="text-align: left;">
+                                            <form onsubmit="return false">
+                                                <div class="field">
+                                                    <label for="barcode">Barcode</label>
+                                                    <input type="text" name="barcode" id="barcode" onblur="validateReport()" />
+                                                </div>
+                                                <div class="amount">
+                                                    <label for="amount">Amount left</label>
+                                                    <input type="text" name="amount" id="amount" onblur="validateReport()" />
+                                                </div>
+                                                <br />
+                                                <div>
+                                                    <input id="submitButton" type="submit" value="Submit" onclick="submitReport()" />
+                                                </div>
+                                                <div id="feedback" style="color: red; font-weight: bold"></div>
+                                            </form>
+                                        </div>
+									</div>
+								</div>
+							</section>
+
+						<!-- Two -->
+							<section id="two" class="wrapper alt spotlight style2">
+								<div class="inner">
+									<div class="content">
+										<h2 class="major">Why?</h2>
+                                        <p>The 2020 COVID-19 virus produced large-scale panic buying, emptying shelves at retail and grocery stores. Many people risked infection to buy essential goods at these stores but had to double or triple their risk instead, going from store to store until they either found what they needed or gave up.</p>
+                                        <p>Even after the initial ruckus died down, many products were sold out as quickly as they were stocked - continuing the cycle of buyers increasing COVID-19 spread by visiting many stores due to empty shelves.</p>
+                                        <p>Co-forage helps shoppers target a single store to get essential goods. When a Co-forage user at a store submits an inventory report showing how much product is on the shelf, other users can search for that or similar products to find out which stores in their area can supply what they need. Instead of hunting through store after store, shoppers can go straight to the store that's most likely to have the products they need.</p>
+									</div>
+								</div>
+							</section>
+
+						<!-- Four -->
+							<section id="four" class="wrapper alt style1">
+								<div class="inner">
+									<h1 class="major">Developers</h1>
+										<p>The Co-forage API is <b>free to use</b>, both for submitting inventory reports and searching existing reports. </p>
+                                        <div id="readme"></div>
+							</section>
+
+					</section>
+
+				<!-- Footer -->
+					<section id="footer">
+						<div class="inner">
+							<ul class="copyright">
+								<li>&copy; Steve Perkins. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+							</ul>
+						</div>
+					</section>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="web/assets/js/skel.min.js"></script>
+			<script src="web/assets/js/jquery.min.js"></script>
+			<script src="web/assets/js/jquery.scrollex.min.js"></script>
+			<script src="web/assets/js/util.js"></script>
+			<!--[if lte IE 8]><script src="web/assets/js/ie/respond.min.js"></script><![endif]-->
+            <script src="web/assets/js/main.js"></script>
+            <script src="https://cdn.jsdelivr.net/remarkable/1.7.1/remarkable.min.js"></script>
+            <script>
+
+                var userLatitude;
+                var userLongitude;
+
+                function displayReadme() {
+                    var jsonFile = new XMLHttpRequest();
+                    jsonFile.open("GET", "web/README.md", true);
+                    jsonFile.send();
+
+                    jsonFile.onreadystatechange = function() {
+                        if (jsonFile.readyState == 4 && jsonFile.status == 200) {
+                            document.getElementById("readme").innerHTML = new Remarkable().render(jsonFile.responseText);
+                        }
+                    }
+                }
+
+                function getLocation() {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(function(position) {
+                            userLatitude = position.coords.latitude;
+                            userLongitude = position.coords.longitude;
+                        }, function(error) {
+                            console.error(error);
+                            document.getElementById("feedback").innerHTML = "<p>Couldn't get your location - geolocation is required for report submission.</p>";
+                            document.getElementById("submitButton").setAttribute("disabled", "disabled");
+                        });
+                    } else {
+                        console.error("Couldn't retrieve user's geolocation");
+                        document.getElementById("feedback").innerHTML = "<p>Couldn't get your location - geolocation is required for report submission.</p>";
+                        document.getElementById("submitButton").setAttribute("disabled", "disabled");
+                    }
+                }
+
+                function validateReport() {
+                    var feedback = document.getElementById("feedback");
+                    feedback.innerHTML = "";
+
+                    var errors = "";
+                    var barcode = document.getElementById("barcode").value;
+                    var amount = document.getElementById("amount").value;
+                    if (!barcode) {
+                        errors = "<p>Barcode is required</p>";
+                    }
+                    if (amount === "") {
+                        errors += "<p>Amount is required</p>";
+                    }
+
+                    if (errors.length) {
+                        feedback.innerHTML = errors;
+                        document.getElementById("submitButton").setAttribute("disabled", "disabled");
+                        return;
+                    }
+
+                    if (isNaN(+barcode) || barcode.length < 12 || barcode.length > 13) {
+                        errors += "<p>Barcode must be 13 digits</p>";
+                    }
+
+                    barcode = +barcode;
+
+                    if (isNaN(+amount) || amount.length < 1 || amount.length > 3) {
+                        errors += "<p>Invalid amount</p>";
+                    }
+
+                    amount = +amount;
+                    if (amount < 0 || amount > 100) {
+                        errors += "<p>Amount must be between 0 and 100%</p>";
+                    }
+
+                    if (errors.length) {
+                        feedback.innerHTML = errors;
+                        document.getElementById("submitButton").setAttribute("disabled", "disabled");
+                        return;
+                    }
+
+                    document.getElementById("submitButton").removeAttribute("disabled");
+                }
+
+                function submitReport(e) {
+                    if (e) { e.preventDefault(); }
+
+                    var body = {
+                        lat: userLatitude,
+                        lng: userLongitude,
+                        barcode: document.getElementById("barcode").value,
+                        amount: +document.getElementById("amount").value
+                    };
+
+                    var request;
+                    request = new XMLHttpRequest();
+                    
+                    request.onreadystatechange = function() {
+                        if (this.readyState === 4) {
+                            var response = JSON.parse(request.responseText);
+                            var feedback = document.getElementById("feedback");
+                            var message;
+                            if (this.status === 200) {
+                                message = buildFeedback("lightgreen", "Thank you!");
+                                setTimeout(function() {
+                                    feedback.innerHTML = "";
+                                }, 10000);
+                            } else if (this.status === 400 && response.error && response.error === "PRODUCT_NOT_FOUND") {
+                                message = buildFeedback("red", response.message + ', but you can add it at <a href="https://world.openfoodfacts.org/">Open Food Facts</a>!');
+                            } else if (this.status >= 400) {
+                                message = buildFeedback("red", response.message);
+                                console.error(message);
+                            }
+
+                            feedback.innerHTML = message;
+                            console.error(message);
+                        }
+                    };
+                    request.open("POST", "/api/product", true);
+                    request.setRequestHeader("Content-Type", "application/json");
+                    request.setRequestHeader("Accept", "application/json");
+                    request.setRequestHeader("Authorization", "gaeog-fear-gfes-olkil");
+                    request.send(JSON.stringify(body));
+                }
+
+                function buildFeedback(color, text) {
+                    return '<span style="background-color: #2e3141; color: ' + color + '; padding: 15px; margin: 30px">' + text + '</span>';
+                }
+
+                displayReadme();
+                getLocation();
+            </script>
+	</body>
 </html>
