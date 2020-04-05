@@ -20,7 +20,7 @@ const logger = winston.createLogger({
 const googleToken: string = process.env.HEREAPI_TOKEN;
 const placesSvc = new PlaceLookupSvc(googleToken);
 const barcodeSvc = new BarcodeSvc();
-
+logger.info("ENVIRONMENT: " + JSON.stringify(process.env))
 const dbSvc = new DbSvc(
    process.env.DB_HOST || "localhost",
    +process.env.DB_PORT || 5433,
