@@ -8,6 +8,7 @@ import { BarcodeLookupResult } from "./models/BarcodeLookupResult"
 import { Product } from "./models/Product"
 import { BarcodeReport } from "./models/BarcodeReport"
 import { SearchParams } from "./models/SearchParams"
+const { Remarkable } = require('remarkable');
 
 const logger = winston.createLogger({
    level: 'debug',
@@ -29,8 +30,14 @@ const dbSvc = new DbSvc(
 
 dbSvc.init();
 
-
 const app = express();
+// logger.info("MD html is " + require("fs").readFileSync("./README.md"))
+// const index = new Remarkable().render();
+// app.use("/", async (req, res, next) => {
+//    res.header("Content-Type", "text/html")
+//    res.render(index)
+// })
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(async (req, res, next) => {
@@ -63,7 +70,7 @@ app.use(async (req, res, next) => {
 /**
  * Search for a store inventory of a product by barcode and lat and lng and radius, barcode and geohash and radius,
  * name and lat and lng and radius, name and geohash and radius, name and store ID, or barcode and store ID
- */ 
+ */
 app.post('/api/product/search', async (req, res) => {
    try {
       const results = await dbSvc.search(req.body as SearchParams)
