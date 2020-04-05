@@ -30,7 +30,7 @@ const logger = winston_1.default.createLogger({
 const googleToken = process.env.HEREAPI_TOKEN;
 const placesSvc = new PlaceLookupSvc_1.PlaceLookupSvc(googleToken);
 const barcodeSvc = new BarcodeSvc_1.BarcodeSvc();
-const dbSvc = new DbSvc_1.DbSvc(process.env.OPENSHIFT_POSTGRES_DB_HOST || "localhost", +process.env.OPENSHIFT_POSTGRES_DB_PORT || 5433, process.env.OPENSHIFT_POSTGRES_DB_NAME || "coforage", process.env.OPENSHIFT_POSTGRES_DB_USER || "service", process.env.OPENSHIFT_POSTGRES_DB_PASSWORD || "53ndgjdg0idf0ds");
+const dbSvc = new DbSvc_1.DbSvc(process.env.DB_HOST || "localhost", +process.env.DB_PORT || 5433, process.env.DB_NAME || "coforage", process.env.DB_USER || "service", process.env.DB_PASSWORD || "53ndgjdg0idf0ds");
 dbSvc.init();
 const app = express_1.default();
 // logger.info("MD html is " + require("fs").readFileSync("./README.md"))
