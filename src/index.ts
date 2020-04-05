@@ -22,11 +22,11 @@ const placesSvc = new PlaceLookupSvc(googleToken);
 const barcodeSvc = new BarcodeSvc();
 
 const dbSvc = new DbSvc(
-   process.env.OPENSHIFT_POSTGRES_DB_HOST || "localhost",
-   +process.env.OPENSHIFT_POSTGRES_DB_PORT || 5433,
-   process.env.OPENSHIFT_POSTGRES_DB_NAME || "coforage",
-   process.env.OPENSHIFT_POSTGRES_DB_USER || "service",
-   process.env.OPENSHIFT_POSTGRES_DB_PASSWORD || "53ndgjdg0idf0ds")
+   process.env.DB_HOST || "localhost",
+   +process.env.DB_PORT || 5433,
+   process.env.DB_NAME || "coforage",
+   process.env.DB_USER || "service",
+   process.env.DB_PASSWORD || "53ndgjdg0idf0ds")
 
 dbSvc.init();
 
