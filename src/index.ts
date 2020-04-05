@@ -21,12 +21,14 @@ const googleToken: string = process.env.HEREAPI_TOKEN;
 const placesSvc = new PlaceLookupSvc(googleToken);
 const barcodeSvc = new BarcodeSvc();
 
-const dbSvc = new DbSvc(
-   process.env.DB_HOST || "localhost",
-   +process.env.DB_PORT || 5433,
-   process.env.DB_NAME || "coforage",
-   process.env.DB_USER || "service",
-   process.env.DB_PASSWORD || "53ndgjdg0idf0ds")
+logger.info("ENVIRONMENT: " + JSON.stringify(process.env))
+// const dbSvc = new DbSvc(
+//    process.env.DB_HOST || "localhost",
+//    +process.env.DB_PORT || 5433,
+//    process.env.DB_NAME || "coforage",
+//    process.env.DB_USER || "service",
+   // process.env.DB_PASSWORD || "53ndgjdg0idf0ds")
+const dbSvc = new DbSvc(process.env.DATABASE_URL)
 
 dbSvc.init();
 

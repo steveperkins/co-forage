@@ -33,14 +33,19 @@ WHERE storeId=$1 AND barcode=$1`
 
 export class DbSvc {
     private pool: Pool;
-    constructor(host: string, port: number, dbname: string, user: string, password: string) {
-        this.pool = new Pool({
-            host,
-            database: dbname,
-            user,
-            password,
-            port
-        })
+    constructor(hostOrConnectionString: string, port?: number, dbname?: string, user?: string, password?: string) {
+        // If only the host is populated, the user is passing a connection string
+        if (hostOrConnectionString && !port && !dbname && !user && !password) {
+            this.pool = new Pool({ connectionString: hostOrConnectionString, ssl: true })
+        } else {
+            this.pool = new Pool({
+                host: hostOrConnectionString,
+                database: dbname,
+                user,
+                password,
+                port
+            })
+        }
     }
 
     async init() {
