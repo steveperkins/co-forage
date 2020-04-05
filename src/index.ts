@@ -8,7 +8,6 @@ import { BarcodeLookupResult } from "./models/BarcodeLookupResult"
 import { Product } from "./models/Product"
 import { BarcodeReport } from "./models/BarcodeReport"
 import { SearchParams } from "./models/SearchParams"
-const { Remarkable } = require('remarkable');
 
 const logger = winston.createLogger({
    level: 'debug',
@@ -16,6 +15,8 @@ const logger = winston.createLogger({
    defaultMeta: { service: 'index' },
    transports: [new winston.transports.Console()]
 });
+
+try {
 
 const googleToken: string = process.env.HEREAPI_TOKEN;
 const placesSvc = new PlaceLookupSvc(googleToken);
@@ -239,3 +240,7 @@ const serverIp = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1'
 const server = app.listen(serverPort, () => {
    logger.info(`Server now listening at http://${serverIp}:${serverPort}`)
 })
+
+} catch(e) {
+   logger.error("Great. Something got hosed. This log message is showing up instead of letting Heroku crash the whole application.")
+}
