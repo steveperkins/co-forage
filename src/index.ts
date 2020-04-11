@@ -237,11 +237,11 @@ try {
       res.sendfile("dist/web/index.html");
    })
 
-   app.use("/php*", async (req, res, next) => {
+/*    app.use("/php*", async (req, res, next) => {
       // Block everything else
       res.status(900)
       res.end()
-   })
+   }) */
 
    const serverPort = 8080
    if (process.env.HTTPS) {
@@ -249,7 +249,7 @@ try {
          key: fs.readFileSync("/opt/bitnami/letsencrypt/certificates/myyt.space.key"),
          cert: fs.readFileSync("/opt/bitnami/letsencrypt/certificates/myyt.space.crt")
        }, app).listen(serverPort, () => {
-         logger.info(`Server now listening at port ${serverPort}`)
+         logger.info(`HTTPS Server now listening at port ${serverPort}`)
       })
    } else {
       const server = app.listen(serverPort, () => {
