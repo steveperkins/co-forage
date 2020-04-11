@@ -1,6 +1,8 @@
 import winston from "winston"
 import express from "express"
 import bodyParser from "body-parser"
+import fs from "fs"
+import https from "https"
 import { DbSvc } from "./DbSvc"
 import { PlaceLookupSvc } from "./PlaceLookupSvc"
 import { BarcodeSvc } from "./BarcodeSvc"
@@ -8,6 +10,7 @@ import { BarcodeLookupResult } from "./models/BarcodeLookupResult"
 import { Product } from "./models/Product"
 import { BarcodeReport } from "./models/BarcodeReport"
 import { SearchParams } from "./models/SearchParams"
+
 
 const logger = winston.createLogger({
    level: 'debug',
@@ -234,11 +237,17 @@ try {
       res.sendfile("dist/web/index.html");
    });
 
-   const serverPort = process.env.OPENSHIFT_NODEJS_PORT || 8080
-   const serverIp = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1'
-   const server = app.listen(serverPort, () => {
-      logger.info(`Server now listening at http://${serverIp}:${serverPort}`)
-   })
+   const serverPort = 8080
+   if (process.env.HTTPS) {
+      https.createServer({
+         key: fs.readFileSync("/opt/bitnami/letsencrypt/certificates/myyt.space.key"),
+         cert: fs.readFileSync("/opt/bitnami/letsencrypt/certificates/myyt.space.crt")
+       }, app)
+   } else {
+      const server = app.listen(serverPort, () => {
+         logger.info(`Server now listening at port ${serverPort}`)
+      })
+   }
 
 } catch(e) {
    logger.error("Great. Something got hosed. " + e)
