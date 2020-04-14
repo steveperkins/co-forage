@@ -1,8 +1,19 @@
+/**
+ * BarcodeSvc.ts
+ * The Barcode service performs queries based on the barcode.
+ * 
+ * Created by S Perkins on 2020-04-01
+ * 
+ */
+
 import winston from "winston"
 import { BarcodeLookupResult } from "./models/BarcodeLookupResult";
 import axios from "axios"
+
+/** Third-party API for querying product information from a barcode. */
 const URL_ROOT = "https://world.openfoodfacts.org/api/v0/product/"
 
+/** Logger for this class. */
 const logger = winston.createLogger({
    level: 'debug',
    format: winston.format.json(),
@@ -15,6 +26,14 @@ axios.defaults.responseType = "json"
 
 export class BarcodeSvc {
 
+    /**
+     * Perform the lookup (query) against third-party APIs for product information. If not
+     * found, an error will be thrown.
+     * 
+     * @param barcode  the barcode (string representation)
+     * 
+     * @returns [[BarcodeLookupResult]] the results of the query
+     */
     async lookup(barcode: string): Promise<BarcodeLookupResult> {
         if (barcode.length === 12) {
             barcode = "0" + barcode

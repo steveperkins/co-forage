@@ -1,3 +1,11 @@
+/**
+ * DbSvc.ts
+ * The database service performs CRUD functions.
+ * 
+ * Created by S Perkins on 2020-04-01
+ * 
+ */
+
 import geohash from "ngeohash"
 import { Pool } from "pg"
 import { Store } from "./models/Store";
@@ -7,6 +15,8 @@ import { Auth } from "./models/Auth";
 import { SearchParams } from "./models/SearchParams";
 import { StoreInventoryReport } from "./models/StoreInventoryReport";
 import { ProductInventoryReport } from "./models/ProductInventoryReport";
+
+// TODO: add documentation for SQL stubs. these are a work in progress.
 
 const GET_STORE_BY_GEOHASH_SQL = "SELECT * FROM store WHERE geohash LIKE $1 LIMIT 1" // TODO We'll have to add the % manually
 // node-postgres provides no way to find the auto-generated key when a record is inserted. This is the best we've got.
@@ -31,6 +41,10 @@ const GET_STORE_BARCODE_HISTORY = `SELECT store.id AS storeId, store.name AS sto
 FROM store_barcode_history sb JOIN product p ON sb.barcode=p.barcode JOIN store ON sb.storeid=store.id
 WHERE storeId=$1 AND barcode=$1`
 
+/**
+ * The database service class. On initialization, the tables are created. Other functions
+ * are for ease of coding specialized functions.
+ */
 export class DbSvc {
     private pool: Pool;
     constructor(hostOrConnectionString: string, port?: number, dbname?: string, user?: string, password?: string) {
@@ -48,6 +62,9 @@ export class DbSvc {
         }
     }
 
+    /**
+     * Initialize the database tables if not already existing.
+     */
     async init() {
         await this.pool.query(`CREATE TABLE IF NOT EXISTS store (
             id BIGSERIAL PRIMARY KEY,
@@ -98,6 +115,12 @@ export class DbSvc {
         )`)
     }
 
+    /**
+     * Query the database given the search parameters.
+     * 
+     * @param params the search parameters
+     * @returns [[StoreInventoryReport]] the results of the query
+     */
     async search(params: SearchParams) : Promise<StoreInventoryReport[]> {
         let queryResult;
 
@@ -154,6 +177,12 @@ export class DbSvc {
         return reports
     }
 
+    /**
+     * Query for a [[Store]] from the long and lat.
+     * @param lat the lat to search by
+     * @param lng the long to search by
+     * @returns [[Store]] results of the query
+     */
     async getStoreByLocation(lat: number, lng: number) : Promise<Store> {
         // Generate geohash to identify the store's general area
         const hash = geohash.encode(lat, lng, 5)
@@ -162,6 +191,11 @@ export class DbSvc {
         return result.rows[0] as Store
     }
 
+    /**
+     * Add a [[Store]] to the database.
+     * @param store the store to add
+     * @returns [[Store]] the store entity
+     */
     async insertStore(store: Store) : Promise<Store> {
         store.geohash = geohash.encode(store.lat, store.lng)
         await this.pool.query(INSERT_STORE_SQL, [store.name, store.address, store.country, store.lat, store.lng, store.geohash])
@@ -169,16 +203,31 @@ export class DbSvc {
         return result.rows[0] as Store
     }
 
+    /**
+     * Query for a [[Product]] from the barcode.
+     * @param barcode the barcode to search by
+     * @returns [[Product]] the product entity found
+     */
     async getProductByBarcode(barcode: string) : Promise<Product> {
         const result = await this.pool.query(GET_PRODUCT_BY_BARCODE_SQL, [barcode])
         return result.rows[0] as Product
     }
 
+    /**
+     * Add a [[Product]] to the database.
+     * @param product the product to add
+     * @return [[Product]] the product entity added
+     */
     async insertProduct(product: Product) : Promise<Product> {
         await this.pool.query(INSERT_PRODUCT_SQL, [product.barcode, product.name, product.genericname, product.company, product.imageurl])
         return product
     }
 
+    /**
+     * Add a [[BarcodeReport]] to the database.
+     * @param report the report to add
+     * @returns [[BacodeReport]] the report entity added
+     */
     async insertReport(report: BarcodeReport) : Promise<BarcodeReport> {
         // Archive any existing report for this store and product
         await this.pool.query(ARCHIVE_STORE_INVENTORY_REPORT, [report.storeId, report.barcode])
@@ -187,11 +236,21 @@ export class DbSvc {
         return report
     }
 
+    /**
+     * Query the datbase to validate the token exists.
+     * @param token the authentication token
+     * @return [[Auth]] the authenticated user
+     */
     async validateAuthToken(token: string) : Promise<Auth> {
         const result = await this.pool.query(FIND_AUTH_TOKEN_SQL, [token])
         return result.rows[0] as Auth
     }
 
+    /**
+     * Convert a database store record to a [[Store]].
+     * @param row  the database record
+     * @returns [[Store]] fully populated object
+     */
     private rowToStore(row: any) : Store {
         const store = new Store();
         store.id = row.storeId
@@ -204,6 +263,11 @@ export class DbSvc {
         return store
     }
 
+    /**
+     * Convert a database product record to a [[Product]].
+     * @param row the database record
+     * @returns [[Product]] fully populated object
+     */
     private rowToProduct(row: any) : Product {
         const product = new Product();
         product.name = row.productName
