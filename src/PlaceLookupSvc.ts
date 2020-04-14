@@ -1,3 +1,11 @@
+/**
+ * PlaceLookupSvc.ts
+ * The database query to get store information.
+ * 
+ * Created by S Perkins on 2020-04-01
+ * 
+ */
+
 import winston from "winston"
 import axios from "axios"
 import { Store } from "./models/Store";
@@ -5,6 +13,7 @@ import { Store } from "./models/Store";
 // Place search URL. 600 is the Here place category for Shopping
 let URL_ROOT = "https://discover.search.hereapi.com/v1/discover?limit=1&apiKey={apiKey}&q=Shopping&in=circle:{latlng};r=300"
 
+/** Logger for this class. */
 const logger = winston.createLogger({
    level: "debug",
    format: winston.format.json(),
@@ -20,6 +29,12 @@ export class PlaceLookupSvc {
         URL_ROOT = URL_ROOT.replace("{apiKey}", authToken)
     }
 
+    /**
+     * Query for a [[Store]] base on long and lat.
+     * @param lat the latitude to search by
+     * @param lng the long to search by
+     * @returns [[Store]] the store entity matching the search criteria
+     */
     async placeFromLatLng(lat: number, lng: number): Promise<Store> {
         const url = URL_ROOT.replace("{latlng}", `${lat},${lng}`)
         try {

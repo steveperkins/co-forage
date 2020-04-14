@@ -1,3 +1,11 @@
+/**
+ * index.ts
+ * The service API. Controller for defining the service endpoints.
+ * 
+ * Created by S Perkins on 2020-04-01
+ * 
+ */
+
 import winston from "winston"
 import express from "express"
 import bodyParser from "body-parser"
@@ -11,7 +19,7 @@ import { Product } from "./models/Product"
 import { BarcodeReport } from "./models/BarcodeReport"
 import { SearchParams } from "./models/SearchParams"
 
-
+/** Logger for this class. */
 const logger = winston.createLogger({
    level: 'debug',
    format: winston.format.json(),
